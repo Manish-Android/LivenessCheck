@@ -32,11 +32,11 @@ class MainActivity : AppCompatActivity() {
     private var currentStepIndex = 0
     private val livenessActions = listOf(
         "Smile 😊" to R.drawable.smiling_face,
-        "Turn Head Right 👉" to R.drawable.left_head_turn_face,
-        "Turn Head Left 👈" to R.drawable.right_head_turn_face,
+        "Turn Head Right 👉" to R.drawable.right_head_turn_face,
+        "Turn Head Left 👈" to R.drawable.left_head_turn_face,
         "Blink Both Eyes 👀" to R.drawable.blinking_face,
-        "Close Left Eye 👁" to R.drawable.right_eye_close_face,
-        "Close Right Eye 👁" to R.drawable.left_eye_close_face
+        "Close Left Eye 👁" to R.drawable.left_eye_close_face,
+        "Close Right Eye 👁" to R.drawable.right_eye_close_face
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
@@ -107,81 +106,81 @@ class MainActivity : AppCompatActivity() {
 
 
     @OptIn(ExperimentalGetImage::class)
-/*
-    private fun processImage(imageProxy: ImageProxy) {
-        val mediaImage = imageProxy.image ?: return
-        val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+    /*
+        private fun processImage(imageProxy: ImageProxy) {
+            val mediaImage = imageProxy.image ?: return
+            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
-        val options = FaceDetectorOptions.Builder()
-            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
-            .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
-            .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-            .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
-            .build()
+            val options = FaceDetectorOptions.Builder()
+                .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+                .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+                .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+                .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+                .build()
 
-        val detector = FaceDetection.getClient(options)
+            val detector = FaceDetection.getClient(options)
 
-        detector.process(image)
-            .addOnSuccessListener { faces ->
-                for (face in faces) {
-                    val leftEyeOpen = face.leftEyeOpenProbability ?: 0.0f
-                    val rightEyeOpen = face.rightEyeOpenProbability ?: 0.0f
-                    val smileProb = face.smilingProbability ?: 0.0f
-                    val headTurnAngle = face.headEulerAngleY
-                    val lowerLipContour = face.getContour(FaceContour.LOWER_LIP_BOTTOM)
-                    val upperLipContour = face.getContour(FaceContour.UPPER_LIP_TOP)
+            detector.process(image)
+                .addOnSuccessListener { faces ->
+                    for (face in faces) {
+                        val leftEyeOpen = face.leftEyeOpenProbability ?: 0.0f
+                        val rightEyeOpen = face.rightEyeOpenProbability ?: 0.0f
+                        val smileProb = face.smilingProbability ?: 0.0f
+                        val headTurnAngle = face.headEulerAngleY
+                        val lowerLipContour = face.getContour(FaceContour.LOWER_LIP_BOTTOM)
+                        val upperLipContour = face.getContour(FaceContour.UPPER_LIP_TOP)
 
-                    if (lowerLipContour != null && upperLipContour != null) {
-                        val lowerLipPoints = lowerLipContour.points
-                        val upperLipPoints = upperLipContour.points
+                        if (lowerLipContour != null && upperLipContour != null) {
+                            val lowerLipPoints = lowerLipContour.points
+                            val upperLipPoints = upperLipContour.points
 
-                        if (lowerLipPoints.isNotEmpty() && upperLipPoints.isNotEmpty()) {
-                            val lowerLipY = lowerLipPoints.map { it.y }.average().toFloat()
-                            val upperLipY = upperLipPoints.map { it.y }.average().toFloat()
+                            if (lowerLipPoints.isNotEmpty() && upperLipPoints.isNotEmpty()) {
+                                val lowerLipY = lowerLipPoints.map { it.y }.average().toFloat()
+                                val upperLipY = upperLipPoints.map { it.y }.average().toFloat()
 
-                            val mouthOpenDistance = lowerLipY - upperLipY
+                                val mouthOpenDistance = lowerLipY - upperLipY
 
-                            val faceHeight = face.boundingBox.height().toFloat()
-                            val threshold = faceHeight * 0.08f  // ~8% of face height
+                                val faceHeight = face.boundingBox.height().toFloat()
+                                val threshold = faceHeight * 0.08f  // ~8% of face height
 
-                            if (mouthOpenDistance > threshold) {
-                                Log.d("Liveness", "User's mouth is OPEN.")
-                            } else {
-                                Log.d("Liveness", "User's mouth is CLOSED.")
+                                if (mouthOpenDistance > threshold) {
+                                    Log.d("Liveness", "User's mouth is OPEN.")
+                                } else {
+                                    Log.d("Liveness", "User's mouth is CLOSED.")
+                                }
                             }
                         }
-                    }
 
-                    if (currentStep == 0 && smileProb > 0.7) {
+                        if (currentStep == 0 && smileProb > 0.7) {
 
-                        completeStep("Please turn head RIGHT")
-                    }
-                    else if (currentStep == 1 && headTurnAngle < -15) {
-                        completeStep("Please turn head LEFT")
-                    }
-                    else if (currentStep == 2 && headTurnAngle > 15) {
-                        completeStep("Please BLINK your eyes")
-                    }
-                    else if (currentStep == 3 && leftEyeOpen < 0.3 && rightEyeOpen < 0.3) {
-                        completeStep("Please close your RIGHT eye")
-                    }
-                    else if (currentStep == 4 && leftEyeOpen < 0.3 && rightEyeOpen > 0.3) {
+                            completeStep("Please turn head RIGHT")
+                        }
+                        else if (currentStep == 1 && headTurnAngle < -15) {
+                            completeStep("Please turn head LEFT")
+                        }
+                        else if (currentStep == 2 && headTurnAngle > 15) {
+                            completeStep("Please BLINK your eyes")
+                        }
+                        else if (currentStep == 3 && leftEyeOpen < 0.3 && rightEyeOpen < 0.3) {
+                            completeStep("Please close your RIGHT eye")
+                        }
+                        else if (currentStep == 4 && leftEyeOpen < 0.3 && rightEyeOpen > 0.3) {
 
-                        completeStep("Please close your LEFT eye")
-                    }
-                    else if (currentStep == 5 && leftEyeOpen > 0.3 && rightEyeOpen < 0.3) {
-                        completeStep("Liveness Check Completed!")
-                    }
+                            completeStep("Please close your LEFT eye")
+                        }
+                        else if (currentStep == 5 && leftEyeOpen > 0.3 && rightEyeOpen < 0.3) {
+                            completeStep("Liveness Check Completed!")
+                        }
 
+                    }
+                    imageProxy.close()
                 }
-                imageProxy.close()
-            }
-            .addOnFailureListener {
-                Log.e("Liveness", "Face detection failed", it)
-                imageProxy.close()
-            }
-    }
-*/
+                .addOnFailureListener {
+                    Log.e("Liveness", "Face detection failed", it)
+                    imageProxy.close()
+                }
+        }
+    */
 
     private fun processImage(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image ?: return
@@ -208,11 +207,11 @@ class MainActivity : AppCompatActivity() {
 
                     when (currentAction) {
                         "Smile 😊" -> if (smileProb > 0.7) runOnUiThread { completeStep() }
-                        "Turn Head Left 👈" -> if (headTurnAngle < -15) runOnUiThread { completeStep() }
-                        "Turn Head Right 👉" -> if (headTurnAngle > 15) runOnUiThread { completeStep() }
+                        "Turn Head Right 👉" -> if (headTurnAngle < -15) runOnUiThread { completeStep() }
+                        "Turn Head Left 👈" -> if (headTurnAngle > 15) runOnUiThread { completeStep() }
                         "Blink Both Eyes 👀" -> if (leftEyeOpen < 0.3 && rightEyeOpen < 0.3) runOnUiThread { completeStep() }
-                        "Close Left Eye 👁" -> if (leftEyeOpen < 0.3 && rightEyeOpen > 0.7) runOnUiThread { completeStep() }
-                        "Close Right Eye 👁" -> if (rightEyeOpen < 0.3 && leftEyeOpen > 0.7) runOnUiThread { completeStep() }
+                        "Close Right Eye 👁" -> if (leftEyeOpen < 0.3 && rightEyeOpen > 0.7) runOnUiThread { completeStep() }
+                        "Close Left Eye 👁" -> if (rightEyeOpen < 0.3 && leftEyeOpen > 0.7) runOnUiThread { completeStep() }
                     }
                 }
                 imageProxy.close()
@@ -260,18 +259,6 @@ class MainActivity : AppCompatActivity() {
         updateInstruction()
         startOverallTimer() // Restart the timer
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
