@@ -18,6 +18,12 @@ import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import com.manish.demoofimagecompereason.AppConstent.blink
+import com.manish.demoofimagecompereason.AppConstent.headLeft
+import com.manish.demoofimagecompereason.AppConstent.headRight
+import com.manish.demoofimagecompereason.AppConstent.leftEyeBlink
+import com.manish.demoofimagecompereason.AppConstent.rightEyeBlink
+import com.manish.demoofimagecompereason.AppConstent.smile
 import com.manish.demoofimagecompereason.databinding.ActivityMainBinding
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -31,11 +37,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var shuffledSteps: List<Pair<String, Int>>
     private var currentStepIndex = 0
     private val livenessActions = listOf(
-        "Smile 😊" to R.drawable.smiling_face,
-        "Turn Head Right 👉" to R.drawable.right_head_turn_face,
-        "Turn Head Left 👈" to R.drawable.left_head_turn_face,
-        "Blink Both Eyes 👀" to R.drawable.blinking_face,
-        "Close Left Eye 👁" to R.drawable.left_eye_close_face,
+        smile to R.drawable.smiling_face,
+        headRight to R.drawable.right_head_turn_face,
+        headLeft to R.drawable.left_head_turn_face,
+        blink to R.drawable.blinking_face,
+        leftEyeBlink to R.drawable.left_eye_close_face,
         "Close Right Eye 👁" to R.drawable.right_eye_close_face
     )
 
@@ -206,12 +212,12 @@ class MainActivity : AppCompatActivity() {
                     val (currentAction, _) = shuffledSteps[currentStepIndex] // Get shuffled action
 
                     when (currentAction) {
-                        "Smile 😊" -> if (smileProb > 0.7) runOnUiThread { completeStep() }
-                        "Turn Head Right 👉" -> if (headTurnAngle < -15) runOnUiThread { completeStep() }
-                        "Turn Head Left 👈" -> if (headTurnAngle > 15) runOnUiThread { completeStep() }
-                        "Blink Both Eyes 👀" -> if (leftEyeOpen < 0.3 && rightEyeOpen < 0.3) runOnUiThread { completeStep() }
-                        "Close Right Eye 👁" -> if (leftEyeOpen < 0.3 && rightEyeOpen > 0.7) runOnUiThread { completeStep() }
-                        "Close Left Eye 👁" -> if (rightEyeOpen < 0.3 && leftEyeOpen > 0.7) runOnUiThread { completeStep() }
+                        smile -> if (smileProb > 0.7) runOnUiThread { completeStep() }
+                        headRight -> if (headTurnAngle < -15) runOnUiThread { completeStep() }
+                        headLeft -> if (headTurnAngle > 15) runOnUiThread { completeStep() }
+                        blink -> if (leftEyeOpen < 0.3 && rightEyeOpen < 0.3) runOnUiThread { completeStep() }
+                        rightEyeBlink -> if (leftEyeOpen < 0.3 && rightEyeOpen > 0.7) runOnUiThread { completeStep() }
+                        leftEyeBlink -> if (rightEyeOpen < 0.3 && leftEyeOpen > 0.7) runOnUiThread { completeStep() }
                     }
                 }
                 imageProxy.close()
